@@ -1,0 +1,2 @@
+class EmailChannel < NotificationChannel
+end

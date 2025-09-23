@@ -1,0 +1,9 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  alert: one
+  notification_channel: one
+
+two:
+  alert: two
+  notification_channel: two

@@ -1,0 +1,2 @@
+class LogChannel < NotificationChannel
+end
