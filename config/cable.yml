@@ -1,5 +1,7 @@
+# config/cable.yml
 development:
-  adapter: async
+  adapter: redis
+  url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } %>
 
 test:
   adapter: test
@@ -7,4 +9,3 @@ test:
 production:
   adapter: redis
   url: <%= ENV.fetch("REDIS_URL") { "redis://localhost:6379/1" } %>
-  channel_prefix: crypto_tracker_production
