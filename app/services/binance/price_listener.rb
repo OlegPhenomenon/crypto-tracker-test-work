@@ -2,7 +2,7 @@ require "faye/websocket"
 require "eventmachine"
 require "json"
 require "redis"
-# require 'sidekiq'
+
 module Binance
   class PriceListener
     WEBSOCKET_URL = "wss://stream.binance.com:9443/ws/!ticker@arr"
@@ -52,12 +52,6 @@ module Binance
 
         if price_crossed_up || price_crossed_down
           puts "!!! ALERT TRIGGERED: #{symbol} price #{price} crossed #{direction} #{threshold} (Alert ID: #{alert_id})"
-
-          # Sidekiq::Client.push(
-          #   'queue' => 'default',
-          #   'class' => 'NotificationJob',
-          #   'args' => [alert_id.to_i]
-          # )
 
           @redis.hdel(redis_key, alert_id)
         end
