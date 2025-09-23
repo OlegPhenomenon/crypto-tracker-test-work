@@ -1,7 +1,7 @@
 {
   "name": "Crypto Tracker",
   "service": "rails-app",
-  "dockerComposeFile": "compose.yaml",
+  "dockerComposeFile": "docker-compose.yaml",
   // "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
   "workspaceFolder": "/app",
 
