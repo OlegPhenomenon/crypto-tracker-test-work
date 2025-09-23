@@ -1,3 +1,28 @@
-# Make sure RUBY_VERSION matches the Ruby version in .ruby-version
-ARG RUBY_VERSION=3.2.2
-FROM ghcr.io/rails/devcontainer/images/ruby:$RUBY_VERSION
+# Using base image instead of Ubuntu
+FROM olegphenomenon/rails-base:latest   
+
+# Working directory
+WORKDIR /app
+
+# YJIT is a new JIT compiler for Ruby that can significantly improve performance
+# Enable YJIT (Ruby's Just-In-Time compiler) for better performance
+ENV RUBY_YJIT_ENABLE=1
+ENV RUBYOPT="--yjit"
+
+# Install sqlite3
+USER root
+RUN apt-get update && apt-get install -y sqlite3
+
+# Rails user is already created in the base image and has access to the /app directory
+USER rails:rails
+
+# Update gem system to the latest version
+RUN gem update --system 3.6.8
+
+# Installing required gems for the crypto-tracker
+RUN gem install rails
+
+WORKDIR /app/crypto-tracker
+
+# Default command
+CMD ["bash"]
