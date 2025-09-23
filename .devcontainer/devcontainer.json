@@ -1,9 +1,7 @@
-// For format details, see https://containers.dev/implementors/json_reference/.
-// For config options, see the README at: https://github.com/devcontainers/templates/tree/main/src/ruby
 {
-  "name": "crypto_tracker",
-  "dockerComposeFile": "compose.yaml",
+  "name": "Crypto Tracker",
   "service": "rails-app",
+  "dockerComposeFile": "compose.yaml",
   "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
 
   // Features to add to the dev container. More info: https://containers.dev/features.
@@ -24,15 +22,36 @@
   },
 
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
-  "forwardPorts": [3000, 5432, 6379],
+  "forwardPorts": [3044, 5432, 6379],
 
-  // Configure tool-specific properties.
-  // "customizations": {},
+  "customizations": {
+    "vscode": {
+      "settings": {
+        "ruby.useLanguageServer": true,
+        "ruby.lint": {
+          "rubocop": true
+        },
+        "ruby.format": "rubocop",
+        "editor.formatOnSave": true,
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "files.insertFinalNewline": true,
+        "editor.codeActionsOnSave": {
+          "source.organizeImports": "always",
+          "source.sortImports": "always",
+          "source.fixAll": "always"
+        }
+      },
+      "extensions": [
+        "kaiwood.endwise",
+        "shopify.ruby-lsp",
+        "misogi.ruby-rubocop",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode"
+      ]
+    }
+  },
 
-  // Uncomment to connect as root instead. More info: https://containers.dev/implementors/json_reference/#remoteUser.
-  // "remoteUser": "root",
 
-
-  // Use 'postCreateCommand' to run commands after the container is created.
   "postCreateCommand": "bin/setup --skip-server"
 }
