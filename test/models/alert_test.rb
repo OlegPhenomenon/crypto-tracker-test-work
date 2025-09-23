@@ -17,9 +17,16 @@ class AlertTest < ActiveSupport::TestCase
     refute @alert.valid?, "Alert is valid without symbol"
   end
 
-  test "should be invalid with incorrect direction" do
-    @alert.direction = "sideways"
-    refute @alert.valid?, "Alert is valid with incorrect direction"
+  test "should raise error for invalid direction" do
+    assert_raises(ArgumentError) do
+      @alert.direction = 'sideways'
+    end
+  end
+
+  test "should raise error for invalid exchange" do
+    assert_raises(ArgumentError) do
+      @alert.exchange = 'bybit'
+    end
   end
 
   test "should add active alert to Redis after saving" do
@@ -41,18 +48,18 @@ class AlertTest < ActiveSupport::TestCase
 
   test "should delete alert from Redis after deletion" do
     alert = Alert.create!(
-      exchange: "bybit",
+      exchange: "binance",
       symbol: "ETHUSDT",
       threshold_price: 4000.0,
       direction: "down",
       status: "active"
     )
     
-    assert @redis.with { |conn| conn.hexists("alerts:bybit:ETHUSDT", alert.id) }
+    assert @redis.with { |conn| conn.hexists("alerts:binance:ETHUSDT", alert.id) }
     
     alert.destroy
     
-    key_exists = @redis.with { |conn| conn.hexists("alerts:bybit:ETHUSDT", alert.id) }
+    key_exists = @redis.with { |conn| conn.hexists("alerts:binance:ETHUSDT", alert.id) }
     
     refute key_exists, "Key for deleted alert still exists in Redis"
   end

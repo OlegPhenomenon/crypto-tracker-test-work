@@ -20,7 +20,7 @@ class WorkspacesController < ApplicationController
     if @alert.save
       redirect_to workspaces_path, notice: "Alert was successfully created.", status: :see_other
     else
-      render :new, status: :unprocessable_entity
+      render :index, status: :unprocessable_entity
     end
   end
 

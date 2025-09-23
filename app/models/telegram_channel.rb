@@ -1,0 +1,2 @@
+class TelegramChannel < NotificationChannel
+end

@@ -6,8 +6,9 @@ class Alert < ApplicationRecord
 
   validates :symbol, presence: true, inclusion: { in: SYMBOLS }
   validates :threshold_price, presence: true, numericality: { greater_than: 0 }
-  validates :direction, presence: true, inclusion: { in: %w[up down] }
-  validates :status, presence: true, inclusion: { in: %w[active triggered] }
+  validates :direction, presence: true
+  validates :status, presence: true
+  validates :exchange, presence: true
 
   after_save :sync_to_redis
   after_destroy :remove_from_redis

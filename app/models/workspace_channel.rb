@@ -1,0 +1,2 @@
+class WorkspaceChannel < NotificationChannel
+end
