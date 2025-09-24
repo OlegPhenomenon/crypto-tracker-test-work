@@ -1,0 +1,64 @@
+<header class="bg-gray-900 shadow-lg">
+  <nav class="container mx-auto px-4">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo and Brand -->
+      <div class="flex items-center">
+        <%= link_to root_path, class: "flex items-center space-x-2" do %>
+          <svg class="h-8 w-8 text-blue-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+          </svg>
+          <span class="text-white text-xl font-bold">Crypto Tracker</span>
+        <% end %>
+      </div>
+
+      <!-- Navigation Menu -->
+      <div class="hidden md:flex items-center space-x-8">
+        <%= link_to "Workspace", root_path, class: "text-gray-300 hover:text-white transition duration-200 font-medium" %>
+        <%= link_to "Alerts", alerts_path, class: "text-gray-300 hover:text-white transition duration-200 font-medium" %>
+        <%= link_to "Notification channels", notification_channels_path, class: "text-gray-300 hover:text-white transition duration-200 font-medium" %>
+      </div>
+
+      <!-- User Menu -->
+      <div class="flex items-center space-x-4">
+        <button class="text-gray-300 hover:text-white transition duration-200">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+          </svg>
+        </button>
+
+        <div class="relative">
+          <button class="flex items-center text-gray-300 hover:text-white transition duration-200 focus:outline-none">
+            <svg class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A13.937 13.937 0 0112 16c2.5 0 4.847.655 6.879 1.804M15 10a3 3 0 11-6 0 3 3 0 016 0zm6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Mobile Menu Button -->
+      <div class="md:hidden">
+        <button type="button" class="text-gray-300 hover:text-white focus:outline-none focus:text-white" aria-label="toggle menu" onclick="toggleMobileMenu()">
+          <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Mobile Menu -->
+    <div id="mobile-menu" class="hidden md:hidden pb-4">
+      <div class="flex flex-col space-y-2 pt-2">
+        <%= link_to "Workspace", root_path, class: "text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md text-base font-medium transition duration-200" %>
+        <%= link_to "Alerts", alerts_path, class: "text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md text-base font-medium transition duration-200" %>
+        <%= link_to "Notification channels", notification_channels_path, class: "text-gray-300 hover:text-white hover:bg-gray-800 px-3 py-2 rounded-md text-base font-medium transition duration-200" %>
+      </div>
+    </div>
+  </nav>
+</header>
+
+<script>
+  function toggleMobileMenu() {
+    const menu = document.getElementById('mobile-menu');
+    menu.classList.toggle('hidden');
+  }
+</script>

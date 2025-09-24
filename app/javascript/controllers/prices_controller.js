@@ -20,8 +20,6 @@ export default class extends Controller {
         console.log("PriceChannel disconnected");
       },
       received(data) {
-        console.log(`PriceChannel received ${symbol}:`, data.price);
-
         const priceElement = document.getElementById(`${symbol}-price`);
         if (priceElement) {
           priceElement.innerText = data.price;

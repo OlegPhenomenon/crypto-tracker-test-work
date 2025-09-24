@@ -12,4 +12,4 @@ two:
   threshold_price: 10000.0
   direction: 'down'
   status: 'active'
-  exchange: 'bybit'
+  exchange: 'binance'

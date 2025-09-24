@@ -22,7 +22,10 @@
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
-  <body>
-    <%= yield %>
+  <body class="bg-gray-100">
+    <%= render 'shared/header' %>
+    <main class="min-h-screen">
+      <%= yield %>
+    </main>
   </body>
 </html>

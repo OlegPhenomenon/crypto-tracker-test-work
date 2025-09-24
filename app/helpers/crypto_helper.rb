@@ -19,4 +19,19 @@ module CryptoHelper
   def coin_name(symbol)
     symbol.gsub(/USDT$/, '')
   end
+
+  def channel_icon_color(channel)
+    case channel.type
+    when 'LogChannel'
+      'bg-gray-100 text-gray-600'
+    when 'EmailChannel'
+      'bg-blue-100 text-blue-600'
+    when 'TelegramChannel'
+      'bg-indigo-100 text-indigo-600'
+    when 'WorkspaceChannel'
+      'bg-green-100 text-green-600'
+    else
+      'bg-gray-100 text-gray-600'
+    end
+  end
 end

@@ -1,0 +1,92 @@
+<div class="bg-white shadow-md rounded-lg hover:shadow-lg transition-shadow">
+          <div class="p-6">
+            <!-- Channel Type Header -->
+            <div class="flex items-center justify-between mb-4">
+              <div class="flex items-center min-w-0 flex-1">
+                <% case channel.type %>
+                <% when 'LogChannel' %>
+                  <div class="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                    </svg>
+                  </div>
+                  <span class="ml-3 text-lg font-semibold text-gray-900 truncate">Logging</span>
+                <% when 'EmailChannel' %>
+                  <div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                    </svg>
+                  </div>
+                  <span class="ml-3 text-lg font-semibold text-gray-900 truncate">Email</span>
+                <% when 'TelegramChannel' %>
+                  <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <svg class="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                    </svg>
+                  </div>
+                  <span class="ml-3 text-lg font-semibold text-gray-900 truncate">Telegram</span>
+                <% end %>
+              </div>
+
+              <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                Active
+              </span>
+            </div>
+
+            <div class="space-y-2 mb-4">
+              <% if channel.details.present? && channel.details.any? %>
+                <% case channel.type %>
+                <% when 'EmailChannel' %>
+                  <% if channel.details['email'].present? %>
+                    <div class="text-sm">
+                      <span class="text-gray-500">Email:</span>
+                      <span class="text-gray-900 font-medium"><%= channel.details['email'] %></span>
+                    </div>
+                  <% end %>
+                <% when 'TelegramChannel' %>
+                  <% if channel.details['chat_id'].present? %>
+                    <div class="text-sm">
+                      <span class="text-gray-500">Chat ID:</span>
+                      <span class="text-gray-900 font-medium"><%= channel.details['chat_id'] %></span>
+                    </div>
+                  <% end %>
+                <% when 'LogChannel' %>
+                  <% if channel.details['log_level'].present? %>
+                    <div class="text-sm">
+                      <span class="text-gray-500">Level:</span>
+                      <span class="text-gray-900 font-medium"><%= channel.details['log_level'] || 'info' %></span>
+                    </div>
+                  <% end %>
+                <% end %>
+              <% else %>
+                <div class="text-sm text-gray-500 italic">Details not configured</div>
+              <% end %>
+
+              <!-- Associated Alerts Count -->
+              <div class="text-sm">
+                <span class="text-gray-500">Alerts:</span>
+                <span class="text-gray-900 font-medium"><%= channel.alerts.count %></span>
+              </div>
+
+              <!-- Created Date -->
+              <div class="text-sm">
+                <span class="text-gray-500">Created:</span>
+                <span class="text-gray-900"><%= channel.created_at.strftime("%d.%m.%Y") %></span>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-between items-center pt-4 border-t">
+              <%= link_to "View", notification_channel_path(channel), class: "text-indigo-600 hover:text-indigo-900 text-sm font-medium" %>
+              <div class="flex space-x-3">
+                <%= link_to "Edit", edit_notification_channel_path(channel), class: "text-yellow-600 hover:text-yellow-900 text-sm font-medium" %>
+                <%= link_to "Delete", notification_channel_path(channel), method: :delete,
+                    data: {
+                      "turbo-method": :delete,
+                      "turbo-confirm": "Are you sure? This will also delete all associated alerts."
+                    },
+                    class: "text-red-600 hover:text-red-900 text-sm font-medium" %>
+              </div>
+            </div>
+          </div>
+        </div>

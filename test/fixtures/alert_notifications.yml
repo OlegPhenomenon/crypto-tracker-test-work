@@ -1,9 +1,9 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  alert: one
-  notification_channel: one
+  alert: one # This refers to the 'one:' label in alerts.yml
+  notification_channel: log_channel # This refers to the 'log_channel:' label in notification_channels.yml
 
 two:
-  alert: two
-  notification_channel: two
+  alert: two # This refers to the 'two:' label in alerts.yml
+  notification_channel: email_channel # This refers to the 'email_channel:' label in notification_channels.yml

@@ -6,3 +6,6 @@ import { application } from "./application"
 
 import PricesController from "./prices_controller"
 application.register("prices", PricesController)
+
+import ChannelFormController from "./channel_form_controller"
+application.register("channel_form", ChannelFormController)

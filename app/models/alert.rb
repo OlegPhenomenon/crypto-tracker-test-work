@@ -9,6 +9,7 @@ class Alert < ApplicationRecord
   validates :direction, presence: true
   validates :status, presence: true
   validates :exchange, presence: true
+  validate :must_have_notification_channels
 
   after_save :sync_to_redis
   after_destroy :remove_from_redis
@@ -22,6 +23,12 @@ class Alert < ApplicationRecord
   end
 
   private
+
+  def must_have_notification_channels
+    if notification_channels.empty?
+      errors.add(:notification_channels, "must have at least one notification channel")
+    end
+  end
 
   def redis_key
     "alerts:#{exchange}:#{symbol}"

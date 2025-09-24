@@ -1,0 +1,223 @@
+<div class="container mx-auto px-4 py-8 max-w-4xl">
+  <div class="bg-white shadow-lg rounded-lg overflow-hidden">
+    <!-- Header -->
+    <div class="bg-gradient-to-r from-indigo-500 to-purple-600 px-6 py-4">
+      <h1 class="text-2xl font-bold text-white">Детали канала уведомлений</h1>
+    </div>
+
+    <!-- Content -->
+    <div class="p-6">
+      <!-- Channel Type and Status -->
+      <div class="flex justify-between items-start mb-6">
+        <div class="flex items-center">
+          <% case @notification_channel.type %>
+          <% when 'LogChannel' %>
+            <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mr-4">
+              <svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-3xl font-bold text-gray-800">Логирование</h2>
+              <p class="text-gray-600 mt-1">Системные логи приложения</p>
+            </div>
+          <% when 'EmailChannel' %>
+            <div class="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mr-4">
+              <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-3xl font-bold text-gray-800">Email</h2>
+              <p class="text-gray-600 mt-1">Уведомления по электронной почте</p>
+            </div>
+          <% when 'TelegramChannel' %>
+            <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
+              <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-3xl font-bold text-gray-800">Telegram</h2>
+              <p class="text-gray-600 mt-1">Уведомления в Telegram</p>
+            </div>
+          <% end %>
+        </div>
+
+        <div>
+          <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-green-100 text-green-800">
+            <svg class="w-4 h-4 mr-1" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.293l-3-3a1 1 0 00-1.414 1.414L10.586 9.5H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd"></path>
+            </svg>
+            Активен
+          </span>
+        </div>
+      </div>
+
+      <!-- Channel Configuration -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <% if @notification_channel.details.present? && @notification_channel.details.any? %>
+          <% case @notification_channel.type %>
+          <% when 'LogChannel' %>
+            <div class="border rounded-lg p-4 bg-gray-50">
+              <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Уровень логирования</h3>
+              <p class="mt-2 text-lg font-medium text-gray-900">
+                <%= @notification_channel.details['log_level']&.capitalize || 'Info' %>
+              </p>
+            </div>
+
+            <% if @notification_channel.details['log_file'].present? %>
+              <div class="border rounded-lg p-4 bg-gray-50">
+                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Файл логов</h3>
+                <p class="mt-2 text-lg font-medium text-gray-900 font-mono text-sm">
+                  <%= @notification_channel.details['log_file'] %>
+                </p>
+              </div>
+            <% end %>
+
+          <% when 'EmailChannel' %>
+            <div class="border rounded-lg p-4 bg-gray-50">
+              <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Email адрес</h3>
+              <p class="mt-2 text-lg font-medium text-gray-900">
+                <%= @notification_channel.details['email'] %>
+              </p>
+            </div>
+
+            <% if @notification_channel.details['smtp_settings'].present? %>
+              <div class="border rounded-lg p-4 bg-gray-50">
+                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">SMTP настройки</h3>
+                <div class="mt-2 text-sm text-gray-900">
+                  <pre class="bg-white p-2 rounded border text-xs overflow-x-auto"><%= JSON.pretty_generate(JSON.parse(@notification_channel.details['smtp_settings'])) rescue @notification_channel.details['smtp_settings'] %></pre>
+                </div>
+              </div>
+            <% end %>
+
+          <% when 'TelegramChannel' %>
+            <div class="border rounded-lg p-4 bg-gray-50">
+              <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Chat ID</h3>
+              <p class="mt-2 text-lg font-medium text-gray-900 font-mono">
+                <%= @notification_channel.details['chat_id'] %>
+              </p>
+            </div>
+
+            <div class="border rounded-lg p-4 bg-gray-50">
+              <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Bot Token</h3>
+              <p class="mt-2 text-lg font-medium text-gray-900 font-mono">
+                <%= @notification_channel.details['bot_token']&.gsub(/.(?=.{4})/, '*') || 'Не настроен' %>
+              </p>
+            </div>
+
+            <% if @notification_channel.details['channel_name'].present? %>
+              <div class="border rounded-lg p-4 bg-gray-50">
+                <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Название канала</h3>
+                <p class="mt-2 text-lg font-medium text-gray-900">
+                  <%= @notification_channel.details['channel_name'] %>
+                </p>
+              </div>
+            <% end %>
+          <% end %>
+
+        <% else %>
+          <div class="col-span-2 border rounded-lg p-4 bg-yellow-50 border-yellow-200">
+            <div class="flex items-center">
+              <svg class="w-5 h-5 text-yellow-400 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+              </svg>
+              <p class="text-sm text-yellow-800">Детали конфигурации не настроены</p>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Created Date -->
+        <div class="border rounded-lg p-4 bg-gray-50">
+          <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Дата создания</h3>
+          <p class="mt-2 text-lg font-medium text-gray-900">
+            <%= @notification_channel.created_at.strftime("%d.%m.%Y %H:%M") %>
+          </p>
+        </div>
+
+        <!-- Last Updated -->
+        <div class="border rounded-lg p-4 bg-gray-50">
+          <h3 class="text-sm font-medium text-gray-500 uppercase tracking-wider">Последнее обновление</h3>
+          <p class="mt-2 text-lg font-medium text-gray-900">
+            <%= @notification_channel.updated_at.strftime("%d.%m.%Y %H:%M") %>
+          </p>
+        </div>
+      </div>
+
+      <!-- Associated Alerts -->
+      <% if @notification_channel.alerts.any? %>
+        <div class="border-t pt-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-4">
+            Связанные алерты (<%= @notification_channel.alerts.count %>)
+          </h3>
+          <div class="space-y-3">
+            <% @notification_channel.alerts.limit(5).each do |alert| %>
+              <div class="flex items-center justify-between bg-gray-50 rounded-lg p-3">
+                <div class="flex items-center space-x-3">
+                  <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                    <span class="text-xs font-bold text-blue-600">
+                      <%= alert.symbol.gsub('USDT', '').first(2) %>
+                    </span>
+                  </div>
+                  <div>
+                    <p class="text-sm font-medium text-gray-900"><%= alert.symbol %></p>
+                    <p class="text-xs text-gray-500">
+                      $<%= number_with_precision(alert.threshold_price, precision: 2) %>
+                      (<%= alert.direction == 'up' ? '↑' : '↓' %>)
+                    </p>
+                  </div>
+                </div>
+                <div class="flex items-center space-x-2">
+                  <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium
+                    <%= alert.status == 'active' ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-800' %>">
+                    <%= alert.status == 'active' ? 'Активен' : 'Сработал' %>
+                  </span>
+                  <%= link_to alert_path(alert), class: "text-indigo-600 hover:text-indigo-900 text-xs" do %>
+                    Просмотр
+                  <% end %>
+                </div>
+              </div>
+            <% end %>
+
+            <% if @notification_channel.alerts.count > 5 %>
+              <div class="text-center pt-2">
+                <%= link_to alerts_path, class: "text-sm text-indigo-600 hover:text-indigo-900" do %>
+                  Показать все алерты (еще <%= @notification_channel.alerts.count - 5 %>)
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% else %>
+        <div class="border-t pt-6">
+          <div class="text-center py-8">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-900">Нет связанных алертов</h3>
+            <p class="mt-1 text-sm text-gray-500">Этот канал еще не используется ни одним алертом</p>
+          </div>
+        </div>
+      <% end %>
+
+      <!-- Actions -->
+      <div class="mt-8 flex justify-between">
+        <div class="space-x-3">
+          <%= link_to "Редактировать", edit_notification_channel_path(@notification_channel),
+              class: "inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200" %>
+
+          <%= link_to "Удалить", notification_channel_path(@notification_channel), method: :delete,
+              data: {
+                "turbo-method": :delete,
+                "turbo-confirm": "Вы уверены, что хотите удалить этот канал? Это также удалит все связи с алертами."
+              },
+              class: "inline-flex items-center px-4 py-2 border border-red-300 text-sm font-medium rounded-md text-red-700 bg-white hover:bg-red-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition duration-200" %>
+        </div>
+
+        <%= link_to "← Назад к списку", notification_channels_path,
+            class: "inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition duration-200" %>
+      </div>
+    </div>
+  </div>
+</div>

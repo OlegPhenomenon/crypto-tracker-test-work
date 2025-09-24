@@ -15,6 +15,8 @@ class NotificationJob < ApplicationJob
       channel.send_notification(alert)
     end
 
+    alert.triggered!
+
     logger.info "--- [NotificationJob] Finished for Alert ID: #{alert.id} ---"
   end
 end
