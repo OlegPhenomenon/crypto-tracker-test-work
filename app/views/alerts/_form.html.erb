@@ -15,8 +15,8 @@
     <div>
       <%= form.label :symbol, "Symbol", class: "block text-sm font-medium text-gray-700 mb-2" %>
       <%= form.select :symbol,
-          options_for_select(Alert::SYMBOLS.map { |s| [s, s] }, alert.symbol),
-          { prompt: "Select symbol" },
+          options_for_select(Alert.symbols.map { |s| [s, s] }, alert.symbol),
+          { prompt: "Select cryptocurrency symbol" },
           class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-4 py-2 border" %>
     </div>
 
@@ -56,15 +56,8 @@
           class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-4 py-2 border" %>
     </div>
 
-    <div>
-      <%= form.label :status, "Status", class: "block text-sm font-medium text-gray-700 mb-2" %>
-      <%= form.select :status,
-          options_for_select([['Active', 'active'], ['Triggered', 'triggered']], alert.status),
-          {},
-          class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-4 py-2 border" %>
-    </div>
+    <%= form.hidden_field :status, value: "active" %>
 
-    <!-- Notification Channels -->
     <div>
       <div class="flex items-center justify-between mb-4">
         <div>
