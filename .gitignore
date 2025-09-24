@@ -38,3 +38,7 @@
 
 /node_modules
 /crypto-tracker
+.env
+/config/credentials/development.key
+
+/config/credentials/test.key

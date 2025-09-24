@@ -22,6 +22,14 @@ class Alert < ApplicationRecord
     SYMBOLS
   end
 
+  def remove_from_redis
+    Rails.cache.redis.with do |conn|
+      conn.hdel(redis_key, id)
+    end
+
+    Rails.logger.info "--- [Alert] Removed from Redis: #{redis_key} ---"
+  end
+
   private
 
   def must_have_notification_channels
@@ -42,12 +50,6 @@ class Alert < ApplicationRecord
   
     Rails.cache.redis.with do |conn|
       conn.hset(redis_key, redis_field, redis_value)
-    end
-  end
-  
-  def remove_from_redis
-    Rails.cache.redis.with do |conn|
-      conn.hdel(redis_key, id)
     end
   end
 end

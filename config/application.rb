@@ -17,6 +17,12 @@ module CryptoTracker
     config.autoload_lib(ignore: %w[assets tasks])
     config.cache_store = :redis_cache_store, { url: ENV.fetch("REDIS_URL") { "redis://localhost:6379/0" } }
     config.active_job.queue_adapter = :sidekiq
+    config.action_mailer.delivery_method = :letter_opener_web
+    config.action_mailer.perform_caching = false
+    config.action_mailer.raise_delivery_errors = false
+    config.action_mailer.perform_deliveries = true
+    config.action_mailer.default_url_options = { host: "localhost", port: 3000 }
+    
     # Configuration for the application, engines, and railties goes here.
     #
     # These settings can be overridden in specific environments using the files

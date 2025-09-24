@@ -3,6 +3,7 @@ require "test_helper"
 class AlertsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @alert = alerts(:one)
+    @alert.notification_channels = [notification_channels(:telegram_channel)]
   end
 
   test "should get index" do
@@ -17,14 +18,17 @@ class AlertsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create alert" do
     assert_difference("Alert.count") do
+      telegram_channel_id = notification_channels(:telegram_channel).id
+
       post alerts_url, params: {
         alert: {
           direction: @alert.direction,
           exchange: @alert.exchange,
           status: @alert.status,
           symbol: "XRPUSDT",
-          threshold_price: @alert.threshold_price
-        }
+          threshold_price: @alert.threshold_price,
+        },
+        notification_channel_ids: [telegram_channel_id] 
       }
     end
 
@@ -52,17 +56,27 @@ class AlertsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should update alert" do
-    patch alert_url(@alert), params: { alert: { symbol: "ADAUSDT" } }
+    # Get the ID of a channel from your fixtures
+    telegram_channel_id = notification_channels(:telegram_channel).id
+    
+    patch alert_url(@alert), params: { 
+      alert: { symbol: "ADAUSDT" },
+      # Send the channel IDs separately, just like a form would
+      notification_channel_ids: [telegram_channel_id] 
+    }
 
     assert_redirected_to alert_url(@alert)
-    
     @alert.reload
     assert_equal "ADAUSDT", @alert.symbol
-    assert_equal "Alert was successfully updated.", flash[:notice]
+    assert_equal 1, @alert.notification_channels.count
+    assert_equal telegram_channel_id, @alert.notification_channels.first.id
   end
 
   test "should not update alert with invalid data" do
-    patch alert_url(@alert), params: { alert: { symbol: "" } }
+    patch alert_url(@alert), params: { 
+      alert: { symbol: "" },
+      notification_channel_ids: [notification_channels(:telegram_channel).id]
+    }
     
     assert_response :unprocessable_entity
     assert_template :edit

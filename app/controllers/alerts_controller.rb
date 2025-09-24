@@ -16,7 +16,6 @@ class AlertsController < ApplicationController
   def create
     @alert = Alert.new(alert_params)
 
-    # Add selected notification channels
     if params[:notification_channel_ids].present?
       selected_channels = NotificationChannel.where(id: params[:notification_channel_ids])
       @alert.notification_channels = selected_channels
@@ -35,7 +34,6 @@ class AlertsController < ApplicationController
   end
 
   def update
-    # Update notification channels
     if params[:notification_channel_ids].present?
       selected_channels = NotificationChannel.where(id: params[:notification_channel_ids])
       @alert.notification_channels = selected_channels
@@ -63,6 +61,6 @@ class AlertsController < ApplicationController
   end
 
   def alert_params
-    params.require(:alert).permit(:symbol, :threshold_price, :direction, :status, :exchange)
+    params.require(:alert).permit(:symbol, :threshold_price, :direction, :status, :exchange, notification_channels: [])
   end
 end

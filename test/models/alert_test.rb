@@ -35,7 +35,8 @@ class AlertTest < ActiveSupport::TestCase
       symbol: "BTCUSDT",
       threshold_price: 50000.0,
       direction: "up",
-      status: "active"
+      status: "active",
+      notification_channels: [notification_channels(:telegram_channel)]
     )
       
     redis_key = "alerts:binance:BTCUSDT"
@@ -52,7 +53,8 @@ class AlertTest < ActiveSupport::TestCase
       symbol: "ETHUSDT",
       threshold_price: 4000.0,
       direction: "down",
-      status: "active"
+      status: "active",
+      notification_channels: [notification_channels(:telegram_channel)]
     )
     
     assert @redis.with { |conn| conn.hexists("alerts:binance:ETHUSDT", alert.id) }

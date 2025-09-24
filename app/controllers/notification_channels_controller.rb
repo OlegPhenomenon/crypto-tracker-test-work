@@ -28,6 +28,7 @@ class NotificationChannelsController < ApplicationController
     if @notification_channel.save
       redirect_to notification_channel_url(@notification_channel), notice: 'Notification channel was successfully created.'
     else
+      Rails.logger.error "Notification channel creation failed: #{@notification_channel.errors.full_messages.join(', ')}"
       render :new, status: :unprocessable_entity
     end
   end
@@ -40,6 +41,7 @@ class NotificationChannelsController < ApplicationController
     if @notification_channel.update(notification_channel_params)
       redirect_to notification_channel_url(@notification_channel), notice: 'Notification channel was successfully updated.'
     else
+      Rails.logger.error "Notification channel update failed: #{@notification_channel.errors.full_messages.join(', ')}"
       @channel_type = @notification_channel.type
       render :edit, status: :unprocessable_entity
     end
@@ -65,18 +67,18 @@ class NotificationChannelsController < ApplicationController
   end
 
   def notification_channel_params
-    permitted_params = [:type]
+    permitted_params = [:type, :title]
+    
+    channel_type = params.dig(:notification_channel, :type) || @notification_channel&.type
 
-    if params[:notification_channel][:details].present?
-      case params[:notification_channel][:type]
+    if params[:notification_channel][:details].present? && channel_type
+      case channel_type
       when 'EmailChannel'
-        permitted_params << { details: [:email, :smtp_settings] }
+        permitted_params << { details: [:email] }
       when 'TelegramChannel'
         permitted_params << { details: [:bot_token, :chat_id] }
       when 'LogChannel'
-        permitted_params << { details: [:log_level, :log_file] }
-      else
-        permitted_params << { details: {} }
+        permitted_params << { details: [] }
       end
     end
 

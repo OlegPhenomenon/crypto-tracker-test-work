@@ -21,33 +21,33 @@ class WorkspacesControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "should create alert with a new notification channel" do
-    assert_difference ["Alert.count", "EmailChannel.count"], 1 do
+    email_channel = notification_channels(:email_channel)
+
+    assert_difference("Alert.count", 1) do
       post workspaces_url, params: {
-        alert: @alert_attributes,
-        notification_channels: {
-          
-          "EmailChannel" => {
-            selected: '1',
-            details: { email_address: 'test@example.com' }
-          },
-          
-          "LogChannel" => {
-            selected: '0'
-          }
-        }
+        alert: {
+          exchange: 'binance',
+          symbol: 'ADAUSDT',
+          threshold_price: 1.5,
+          direction: 'up',
+          status: 'active'
+        },
+        # Send an array of IDs, as the controller expects
+        notification_channel_ids: [email_channel.id]
       }
     end
+
 
     assert_redirected_to workspaces_url
     assert_equal "Alert was successfully created.", flash[:notice]
 
-    assert_equal 1, Alert.last.notification_channels.count
-    assert_equal 'test@example.com', Alert.last.notification_channels.first.details['email_address']
+    assert_includes Alert.last.notification_channel_ids, email_channel.id
+    assert_equal 'original@example.com', Alert.last.notification_channels.first.details['email']
   end
 
   test "should not create alert with invalid parameters" do
     assert_no_difference "Alert.count" do
-      post workspaces_url, params: { alert: @alert_attributes.merge(symbol: '') }
+      post workspaces_url, params: { alert: @alert_attributes.merge(symbol: ''), notification_channels: { "TelegramChannel" => { selected: '0' } } }
     end
 
     assert_response :unprocessable_entity

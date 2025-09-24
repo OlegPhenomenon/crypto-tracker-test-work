@@ -15,36 +15,43 @@ module Binance
     end
 
     def run
-      EM.run do
-        ws = Faye::WebSocket::Client.new(WEBSOCKET_URL)
-
-        ws.on :open do |event|
-          p [ :open, "Connected to Binance WebSocket" ]
+      puts "Starting Binance price listener..."
+      loop do
+        EM.run do
+          connect_and_listen
         end
 
-        ws.on :message do |event|
-          data = JSON.parse(event.data)
-          data.each { |ticker| process_ticker(ticker) }
-        end
-
-        ws.on :close do |event|
-          p [ :close, event.code, event.reason ]
-          ws = nil
-        end
+        puts "WebSocket connection closed. Reconnecting in 5 seconds..."
+        sleep 5
       end
     end
 
     private
+
+    def connect_and_listen
+      ws = Faye::WebSocket::Client.new(WEBSOCKET_URL)
+
+      ws.on :open do |event|
+        p [ :open, "Connected to Binance WebSocket" ]
+      end
+
+      ws.on :message do |event|
+        data = JSON.parse(event.data)
+        data.each { |ticker| process_ticker(ticker) }
+      end
+
+      ws.on :close do |event|
+        p [ :close, event.code, event.reason ]
+        ws = nil
+        EM.stop
+      end
+    end
 
     def process_ticker(ticker)
       symbol = ticker["s"]
       price = BigDecimal(ticker["c"])
       redis_key = "alerts:binance:#{symbol}"
       alerts_to_check = @redis.hgetall(redis_key)
-
-      p "======="
-      p "#{symbol} : #{price}"
-      p "======="
 
       return unless Alert::SYMBOLS.include?(symbol)
       
@@ -60,11 +67,7 @@ module Binance
         price_crossed_down = (direction == "down" && price < threshold)
 
         if price_crossed_up || price_crossed_down
-          Sidekiq::Client.push(
-            'queue' => 'default',
-            'class' => 'NotificationJob',
-            'args' => [alert_id.to_i]
-          )
+          NotificationJob.perform_now(alert_id.to_i)
 
           @redis.hdel(redis_key, alert_id)
         end

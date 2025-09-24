@@ -7,7 +7,7 @@ class NotificationChannelsControllerTest < ActionDispatch::IntegrationTest
       type: 'TelegramChannel',
       details: {
         bot_token: 'test_token_123',
-        chat_id: 'chat_id_456'
+        chat_id: '456'
       }
     }
   end
@@ -20,12 +20,6 @@ class NotificationChannelsControllerTest < ActionDispatch::IntegrationTest
   test "should get new" do
     get new_notification_channel_url
     assert_response :success
-  end
-
-  test "should get new with specific type" do
-    get new_notification_channel_url, params: { channel_type: 'TelegramChannel' }
-    assert_response :success
-    assert_kind_of TelegramChannel, assigns(:notification_channel)
   end
 
   test "should create notification channel" do

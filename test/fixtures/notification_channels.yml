@@ -2,8 +2,16 @@
 
 log_channel:
   type: LogChannel
-  details: { log_level: 'info' }
+  details: { log_level: "info" }
 
 email_channel:
   type: EmailChannel
-  details: { email: 'original@example.com' }
+  details: { email: "original@example.com" }
+
+telegram_channel:
+  type: TelegramChannel
+  details:
+    {
+      chat_id: "1234567890",
+      bot_token: "1234567890:ABCdefGHIjklMNOpqrsTUVwxyz",
+    }

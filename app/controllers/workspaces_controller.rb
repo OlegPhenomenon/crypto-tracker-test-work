@@ -8,7 +8,6 @@ class WorkspacesController < ApplicationController
   def create
     @alert = Alert.new(alert_params)
 
-    # Add selected notification channels
     if params[:notification_channel_ids].present?
       selected_channels = NotificationChannel.where(id: params[:notification_channel_ids])
       @alert.notification_channels = selected_channels
@@ -19,6 +18,8 @@ class WorkspacesController < ApplicationController
     else
       @alerts = Alert.all
       @available_channels = NotificationChannel.all.order(:created_at)
+
+      Rails.logger.error "Alert creation failed: #{@alert.errors.full_messages.join(', ')}"
       render :index, status: :unprocessable_entity
     end
   end

@@ -29,6 +29,7 @@ services:
       - ../crypto-tracker/tmp/bundle:/usr/local/bundle
       - ../crypto-tracker/tmp/node_modules:/app/crypto-tracker/node_modules
       - ../crypto-tracker/tmp/.bash_history:/home/rails/crypto-tracker/tmp/.bash_history
+      - letter-opener-data:/app/tmp/letter_opener
 
     working_dir: /app
     command: sleep infinity
@@ -57,6 +58,7 @@ services:
       - ../crypto-tracker/tmp/bundle:/usr/local/bundle
       - ../crypto-tracker/tmp/node_modules:/app/crypto-tracker/node_modules
       - ../crypto-tracker/tmp/.bash_history:/home/rails/crypto-tracker/tmp/.bash_history
+      - letter-opener-data:/app/tmp/letter_opener
     restart: on-failure
     working_dir: /app
     command: bash -l -c "bin/setup --skip-server && bin/rails price_listener:run"
@@ -81,11 +83,13 @@ services:
       - REDIS_URL=redis://redis:6379/1
       - KAMAL_REGISTRY_PASSWORD=$KAMAL_REGISTRY_PASSWORD
       - DB_HOST=postgres
+      - DISABLE_SPRING=1
     volumes:
       - ../:/app
       - ../crypto-tracker/tmp/bundle:/usr/local/bundle
       - ../crypto-tracker/tmp/node_modules:/app/crypto-tracker/node_modules
       - ../crypto-tracker/tmp/.bash_history:/home/rails/crypto-tracker/tmp/.bash_history
+      - letter-opener-data:/app/tmp/letter_opener
     restart: on-failure
     command: bash -l -c "bin/setup --skip-server && bundle exec sidekiq"
     depends_on:
@@ -116,3 +120,4 @@ services:
 volumes:
   redis-data:
   postgres-data:
+  letter-opener-data:

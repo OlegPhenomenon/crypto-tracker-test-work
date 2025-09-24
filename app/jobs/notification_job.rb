@@ -16,6 +16,7 @@ class NotificationJob < ApplicationJob
     end
 
     alert.triggered!
+    alert.remove_from_redis
 
     logger.info "--- [NotificationJob] Finished for Alert ID: #{alert.id} ---"
   end
