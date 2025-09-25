@@ -2,9 +2,7 @@ class Alert < ApplicationRecord
   has_many :alert_notifications, dependent: :destroy
   has_many :notification_channels, through: :alert_notifications
 
-  SYMBOLS = %w[BTCUSDT ETHUSDT PYTHUSDT ADAUSDT BNBUSDT SOLUSDT XRPUSDT DOTUSDT LINKUSDT].freeze
-
-  validates :symbol, presence: true, inclusion: { in: SYMBOLS }
+  validates :symbol, presence: true
   validates :threshold_price, presence: true, numericality: { greater_than: 0 }
   validates :direction, presence: true
   validates :status, presence: true
@@ -18,8 +16,13 @@ class Alert < ApplicationRecord
   enum :exchange, { binance: 'binance' }
   enum :status, { active: 'active', triggered: 'triggered' }
 
-  def self.symbols
-    SYMBOLS
+  def self.symbols(provider: :binance)
+    case provider
+    when :binance
+      Coins::BinanceCoinFetcher.new.fetch_coins
+    else
+      raise "Invalid provider: #{provider}"
+    end
   end
 
   def remove_from_redis

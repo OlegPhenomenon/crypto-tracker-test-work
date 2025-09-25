@@ -1,9 +1,9 @@
 # test/services/binance/price_listener_test.rb
 require "test_helper"
 
-class Binance::PriceListenerTest < ActiveSupport::TestCase
+class Listeners::BinancePriceListenerTest < ActiveSupport::TestCase
   setup do
-    @listener = Binance::PriceListener.new
+    @listener = Listeners::BinancePriceListener.new
     @redis = @listener.redis
     @redis.flushdb
   end

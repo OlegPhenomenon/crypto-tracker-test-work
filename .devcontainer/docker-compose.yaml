@@ -38,7 +38,7 @@ services:
       - redis
       - postgres
 
-  listener:
+  binance_price_listener:
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
@@ -61,7 +61,7 @@ services:
       - letter-opener-data:/app/tmp/letter_opener
     restart: on-failure
     working_dir: /app
-    command: bash -l -c "bin/setup --skip-server && bin/rails price_listener:run"
+    command: bash -l -c "bin/setup --skip-server && bin/rails binance_price_listener:run"
     depends_on:
       - redis
       - postgres

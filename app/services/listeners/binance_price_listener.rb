@@ -4,8 +4,8 @@ require "json"
 require "redis"
 require "sidekiq"
 
-module Binance
-  class PriceListener
+module Listeners
+  class BinancePriceListener < ListenerInterface
     WEBSOCKET_URL = "wss://stream.binance.com:9443/ws/!ticker@arr"
 
     attr_reader :redis
@@ -53,7 +53,7 @@ module Binance
       redis_key = "alerts:binance:#{symbol}"
       alerts_to_check = @redis.hgetall(redis_key)
 
-      return unless Alert::SYMBOLS.include?(symbol)
+      return unless Alert.symbols(provider: :binance).include?(symbol)
       
       ActionCable.server.broadcast("prices_for_#{symbol}", { price: price })
       
@@ -67,7 +67,7 @@ module Binance
         price_crossed_down = (direction == "down" && price < threshold)
 
         if price_crossed_up || price_crossed_down
-          NotificationJob.perform_now(alert_id.to_i)
+          NotificationJob.perform_later(alert_id.to_i)
 
           @redis.hdel(redis_key, alert_id)
         end
