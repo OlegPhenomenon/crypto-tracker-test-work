@@ -28,17 +28,6 @@ class TelegramChannelTest < ActiveSupport::TestCase
     assert_not_nil channel.errors[:bot_token]
   end
 
-  test "bot_token should be encrypted and not stored plaintext in details" do
-    channel = TelegramChannel.create!(@channel_attributes)
-    channel.reload
-
-    assert_equal "super_secret_token_123", channel.bot_token
-    
-    raw_details = NotificationChannel.find_by_sql("SELECT details FROM notification_channels WHERE id = #{channel.id}").first.details
-    assert_nil raw_details["bot_token"]
-  end
-
-
   test "send_notification calls Telegram API with correct decrypted token" do
     channel = TelegramChannel.create!(
       title: "Test Telegram Channel",

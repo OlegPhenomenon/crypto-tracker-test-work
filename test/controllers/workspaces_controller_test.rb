@@ -30,10 +30,9 @@ class WorkspacesControllerTest < ActionDispatch::IntegrationTest
           symbol: 'ADAUSDT',
           threshold_price: 1.5,
           direction: 'up',
-          status: 'active'
+          status: 'active',
+          notification_channel_ids: [email_channel.id]
         },
-        # Send an array of IDs, as the controller expects
-        notification_channel_ids: [email_channel.id]
       }
     end
 

@@ -6,4 +6,5 @@ class NotificationChannel < ApplicationRecord
   def send_notification(alert)
     raise NotImplementedError, "#{self.class.name} must implement :send_notification"
   end
+
 end

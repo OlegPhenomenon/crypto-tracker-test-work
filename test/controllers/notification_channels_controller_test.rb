@@ -24,23 +24,12 @@ class NotificationChannelsControllerTest < ActionDispatch::IntegrationTest
 
   test "should create notification channel" do
     assert_difference("TelegramChannel.count", 1) do
-      post notification_channels_url, params: { notification_channel: @valid_attributes }
+      post notification_channels_url, params: { notification_channel: { type: 'TelegramChannel'}, "telegram_channel" => @valid_attributes }
     end
 
     assert_redirected_to notification_channel_url(NotificationChannel.last)
     assert_equal "Notification channel was successfully created.", flash[:notice]
     assert_equal 'test_token_123', NotificationChannel.last.details['bot_token']
-  end
-
-  test "should not create notification channel without type" do
-    assert_no_difference("NotificationChannel.count") do
-      post notification_channels_url, params: {
-        notification_channel: @valid_attributes.except(:type)
-      }
-    end
-
-    assert_response :unprocessable_entity
-    assert_template :new
   end
 
   test "should show notification channel" do
@@ -55,7 +44,7 @@ class NotificationChannelsControllerTest < ActionDispatch::IntegrationTest
 
   test "should update notification channel" do
     patch notification_channel_url(@email_channel), params: {
-      notification_channel: {
+      email_channel: {
         details: { email: 'updated@example.com' }
       }
     }

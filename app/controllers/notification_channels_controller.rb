@@ -64,11 +64,11 @@ class NotificationChannelsController < ApplicationController
 
   def notification_channel_params
     channel_param_key = channel_type&.underscore
-    channel_class = channel_type.constantize
+    channel_class = channel_type&.constantize
 
     specific_params = params
       .require(channel_param_key)
-      .permit(:title, details: channel_class.permitted_details)
+      .permit(:title, details: channel_class&.permitted_details)
       .merge(type: channel_type)
   end
 end

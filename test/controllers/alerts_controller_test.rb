@@ -27,8 +27,8 @@ class AlertsControllerTest < ActionDispatch::IntegrationTest
           status: @alert.status,
           symbol: "XRPUSDT",
           threshold_price: @alert.threshold_price,
+          notification_channel_ids: [telegram_channel_id] 
         },
-        notification_channel_ids: [telegram_channel_id] 
       }
     end
 
