@@ -1,7 +1,7 @@
 module NotificationChannelsHelper
   def channel_type_options
     [
-      ['Логирование', 'LogChannel'],
+      ['Logging', 'LogChannel'],
       ['Email', 'EmailChannel'],
       ['Telegram', 'TelegramChannel'],
     ]
@@ -10,20 +10,20 @@ module NotificationChannelsHelper
   def channel_type_config(channel_type)
     configs = {
       'LogChannel' => {
-        name: 'Логирование',
-        description: 'Системные логи приложения',
+        name: 'Logging',
+        description: 'System INFO logging',
         icon: 'log',
         color: 'gray'
       },
       'EmailChannel' => {
         name: 'Email',
-        description: 'Уведомления по электронной почте',
+        description: 'Email notifications',
         icon: 'envelope',
         color: 'blue'
       },
       'TelegramChannel' => {
         name: 'Telegram',
-        description: 'Уведомления в Telegram',
+        description: 'Telegram notifications',
         icon: 'telegram',
         color: 'indigo'
       }

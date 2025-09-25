@@ -5,6 +5,6 @@
       <p class="text-gray-600 mt-2">Edit the notification channel settings</p>
     </div>
 
-    <%= render 'form', notification_channel: @notification_channel %>
+    <%= render 'form', notification_channel: @notification_channel, url: notification_channel_path(@notification_channel) %>
   </div>
 </div>

@@ -12,8 +12,8 @@
   </div>
 
   <div>
-    <%= label_tag 'notification_channel[title]', "Title", class: "block text-sm font-medium text-gray-700 mb-2" %>
-    <%= text_field_tag 'notification_channel[title]',
+    <%= label_tag "#{notification_channel.class.name.underscore}[title]", "Title", class: "block text-sm font-medium text-gray-700 mb-2" %>
+    <%= text_field_tag "#{notification_channel.class.name.underscore}[title]",
         notification_channel.title,
         class: "block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm px-4 py-2 border",
         placeholder: "Log Notifications" %>

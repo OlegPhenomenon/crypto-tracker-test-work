@@ -1,0 +1,10 @@
+<% if channel_type == 'LogChannel' %>
+  <%= render partial: "channel_types/log_channel_fields", locals: { notification_channel: notification_channel } %>
+<% elsif channel_type == 'EmailChannel' %>
+  <%= render partial: "channel_types/email_channel_fields", locals: { notification_channel: notification_channel } %>
+<% elsif channel_type == 'TelegramChannel' %>
+  <%= render partial: "channel_types/telegram_channel_fields", locals: { notification_channel: notification_channel } %>
+<% end %>
+
+<!-- Hidden field to ensure type is submitted -->
+<%= hidden_field_tag 'notification_channel[type]', channel_type %>

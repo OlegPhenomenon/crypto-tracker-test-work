@@ -16,11 +16,6 @@ class AlertsController < ApplicationController
   def create
     @alert = Alert.new(alert_params)
 
-    if params[:notification_channel_ids].present?
-      selected_channels = NotificationChannel.where(id: params[:notification_channel_ids])
-      @alert.notification_channels = selected_channels
-    end
-
     if @alert.save
       redirect_to @alert, notice: "Alert was successfully created.", status: :see_other
     else
@@ -34,13 +29,6 @@ class AlertsController < ApplicationController
   end
 
   def update
-    if params[:notification_channel_ids].present?
-      selected_channels = NotificationChannel.where(id: params[:notification_channel_ids])
-      @alert.notification_channels = selected_channels
-    else
-      @alert.notification_channels.clear
-    end
-
     if @alert.update(alert_params)
       redirect_to @alert, notice: 'Alert was successfully updated.', status: :see_other
     else
@@ -61,6 +49,7 @@ class AlertsController < ApplicationController
   end
 
   def alert_params
-    params.require(:alert).permit(:symbol, :threshold_price, :direction, :status, :exchange, notification_channels: [])
+    params.require(:alert)
+      .permit(:symbol, :threshold_price, :direction, :status, :exchange, notification_channel_ids: [])
   end
 end

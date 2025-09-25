@@ -2,11 +2,15 @@ require 'telegram/bot'
 
 class TelegramChannel < NotificationChannel
   encrypts :token
-  
+
   store_accessor :details, :chat_id
 
   validates :chat_id, presence: true, format: { with: /\A-?\d+\z/, message: "must be an integer" }
-  validates :bot_token, presence: true
+  validates :bot_token, presence: true, on: :create
+
+  def self.permitted_details
+    [:bot_token, :chat_id, :title]
+  end
 
   before_save :set_encrypted_token_from_details
   after_find :set_details_from_encrypted_token
@@ -16,7 +20,7 @@ class TelegramChannel < NotificationChannel
   end
 
   def bot_token=(value)
-    @bot_token = value
+    @bot_token = value if value.present?
   end
 
   def send_notification(alert)
@@ -35,11 +39,10 @@ class TelegramChannel < NotificationChannel
   private
 
   def set_encrypted_token_from_details
-    self.token = @bot_token if @bot_token.present?
-    self.details['bot_token'] = nil if @bot_token.present?
+    self.details['bot_token'] = bot_token
   end
 
   def set_details_from_encrypted_token
-    @bot_token = self.token
+    @bot_token = self.details['bot_token']
   end
 end

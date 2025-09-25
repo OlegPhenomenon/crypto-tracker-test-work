@@ -8,11 +8,6 @@ class WorkspacesController < ApplicationController
   def create
     @alert = Alert.new(alert_params)
 
-    if params[:notification_channel_ids].present?
-      selected_channels = NotificationChannel.where(id: params[:notification_channel_ids])
-      @alert.notification_channels = selected_channels
-    end
-
     if @alert.save
       redirect_to workspaces_path, notice: "Alert was successfully created.", status: :see_other
     else
@@ -27,6 +22,6 @@ class WorkspacesController < ApplicationController
   private
 
   def alert_params
-    params.require(:alert).permit(:symbol, :threshold_price, :direction, :status, :exchange)
+    params.require(:alert).permit(:symbol, :threshold_price, :direction, :status, :exchange, notification_channel_ids: [])
   end
 end
