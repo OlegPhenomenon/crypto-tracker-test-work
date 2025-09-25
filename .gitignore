@@ -42,3 +42,6 @@
 /config/credentials/development.key
 
 /config/credentials/test.key
+/config/credentials/production.key
+config/credentials.yml.enc
+config/init_production.sql
