@@ -14,10 +14,10 @@ servers:
       - 91.98.161.63
     cmd: bundle exec sidekiq
 
-  listener:
+  binance_price_listener:
     hosts:
       - 91.98.161.63
-    cmd: bin/rails price_listener:run
+    cmd: bin/rails binance_price_listener:run
 
 registry:
   username: olegphenomenon

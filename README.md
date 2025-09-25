@@ -2,7 +2,10 @@
 
 A personal service for monitoring cryptocurrency prices and receiving notifications when user-defined thresholds are met. The application is built with Ruby on Rails and architected as a set of containerized services managed by Docker Compose, designed for scalability, resilience, and extensibility.
 
-Project can be touch here: http://localhost:3000/notification_channels
+Website: http://localhost:3000/notification_channels
+Deployed by Kamal 2
+
+Standard Rails stack has been used: Ruby on Rails 8 + Hotwire + Redis + Postgresql + Sidekiq
 
 ---
 

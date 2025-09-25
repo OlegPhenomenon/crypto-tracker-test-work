@@ -1,66 +1,43 @@
 name: "crypto_tracker"
 
+x-app-base: &app-base
+  build:
+    context: ..
+    dockerfile: .devcontainer/Dockerfile
+  environment:
+    - RAILS_ENV=development
+    - BUNDLE_PATH=/usr/local/bundle
+    - HISTFILE=/home/rails/crypto-tracker/tmp/.bash_history
+    - HISTSIZE=10000
+    - SAVEHIST=10000
+    - CAPYBARA_SERVER_PORT=45678
+    - SELENIUM_HOST=selenium
+    - REDIS_URL=redis://redis:6379/1
+    - KAMAL_REGISTRY_PASSWORD=$KAMAL_REGISTRY_PASSWORD
+    - DB_HOST=postgres
+  volumes:
+    - ../:/app
+    - ../crypto-tracker/tmp/bundle:/usr/local/bundle
+    - ../crypto-tracker/tmp/node_modules:/app/crypto-tracker/node_modules
+    - ../crypto-tracker/tmp/.bash_history:/home/rails/crypto-tracker/tmp/.bash_history
+    - letter-opener-data:/app/tmp/letter_opener
+  working_dir: /app
+  restart: on-failure
+  depends_on:
+    - redis
+    - postgres
+
 services:
   rails-app:
-    build:
-      context: ..
-      dockerfile: .devcontainer/Dockerfile
-
+    <<: *app-base
     tty: true
     stdin_open: true
-
-    environment:
-      - RAILS_ENV=development
-      - BUNDLE_PATH=/usr/local/bundle
-      - HISTFILE=/home/rails/crypto-tracker/tmp/.bash_history
-      - HISTSIZE=10000
-      - SAVEHIST=10000
-      - CAPYBARA_SERVER_PORT=45678
-      - SELENIUM_HOST=selenium
-      - REDIS_URL=redis://redis:6379/1
-      - KAMAL_REGISTRY_PASSWORD=$KAMAL_REGISTRY_PASSWORD
-      - DB_HOST=postgres
-
     ports:
       - "3000:3000"
-
-    volumes:
-      - ../:/app
-      - ../crypto-tracker/tmp/bundle:/usr/local/bundle
-      - ../crypto-tracker/tmp/node_modules:/app/crypto-tracker/node_modules
-      - ../crypto-tracker/tmp/.bash_history:/home/rails/crypto-tracker/tmp/.bash_history
-      - letter-opener-data:/app/tmp/letter_opener
-
-    working_dir: /app
     command: sleep infinity
 
-    depends_on:
-      - redis
-      - postgres
-
   binance_price_listener:
-    build:
-      context: ..
-      dockerfile: .devcontainer/Dockerfile
-    environment:
-      - RAILS_ENV=development
-      - BUNDLE_PATH=/usr/local/bundle
-      - HISTFILE=/home/rails/crypto-tracker/tmp/.bash_history
-      - HISTSIZE=10000
-      - SAVEHIST=10000
-      - CAPYBARA_SERVER_PORT=45678
-      - SELENIUM_HOST=selenium
-      - REDIS_URL=redis://redis:6379/1
-      - KAMAL_REGISTRY_PASSWORD=$KAMAL_REGISTRY_PASSWORD
-      - DB_HOST=postgres
-    volumes:
-      - ../:/app
-      - ../crypto-tracker/tmp/bundle:/usr/local/bundle
-      - ../crypto-tracker/tmp/node_modules:/app/crypto-tracker/node_modules
-      - ../crypto-tracker/tmp/.bash_history:/home/rails/crypto-tracker/tmp/.bash_history
-      - letter-opener-data:/app/tmp/letter_opener
-    restart: on-failure
-    working_dir: /app
+    <<: *app-base
     command: bash -l -c "bin/setup --skip-server && bin/rails binance_price_listener:run"
     depends_on:
       - redis
@@ -68,33 +45,10 @@ services:
       - rails-app
 
   worker:
-    build:
-      context: ..
-      dockerfile: .devcontainer/Dockerfile
-    working_dir: /app
+    <<: *app-base
     environment:
-      - RAILS_ENV=development
-      - BUNDLE_PATH=/usr/local/bundle
-      - HISTFILE=/home/rails/crypto-tracker/tmp/.bash_history
-      - HISTSIZE=10000
-      - SAVEHIST=10000
-      - CAPYBARA_SERVER_PORT=45678
-      - SELENIUM_HOST=selenium
-      - REDIS_URL=redis://redis:6379/1
-      - KAMAL_REGISTRY_PASSWORD=$KAMAL_REGISTRY_PASSWORD
-      - DB_HOST=postgres
-      - DISABLE_SPRING=1
-    volumes:
-      - ../:/app
-      - ../crypto-tracker/tmp/bundle:/usr/local/bundle
-      - ../crypto-tracker/tmp/node_modules:/app/crypto-tracker/node_modules
-      - ../crypto-tracker/tmp/.bash_history:/home/rails/crypto-tracker/tmp/.bash_history
-      - letter-opener-data:/app/tmp/letter_opener
-    restart: on-failure
+      - DISABLE_SPRING=1 
     command: bash -l -c "bin/setup --skip-server && bundle exec sidekiq"
-    depends_on:
-      - redis
-      - postgres
 
   selenium:
     image: selenium/standalone-chromium
