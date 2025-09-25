@@ -38,7 +38,7 @@ class AlertsControllerTest < ActionDispatch::IntegrationTest
 
   test "should not create alert with invalid data" do
     assert_no_difference("Alert.count") do
-      post alerts_url, params: { alert: { symbol: "" } }
+      post alerts_url, params: { alert: { symbol: "", exchange: "binance" } }
     end
 
     assert_response :unprocessable_entity
