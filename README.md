@@ -1,49 +1,99 @@
-# Crypto Alert Service Architecture
+# Crypto Alert Service
 
-This document outlines the architecture of the personal crypto-alert service. The system is designed to be scalable, extensible, and efficient, leveraging professional design patterns and tools.
+A personal service for monitoring cryptocurrency prices and receiving notifications when user-defined thresholds are met. The application is built with Ruby on Rails and architected as a set of containerized services managed by Docker Compose, designed for scalability, resilience, and extensibility.
 
----
-
-## 1. Data Models (PostgreSQL)
-
-The core data is stored in a PostgreSQL database, structured around three main tables:
-
-* **`alerts`**: Stores the user-defined alert conditions.
-    * `exchange` (string): The exchange the alert is for (e.g., 'binance').
-    * `symbol` (string): The trading pair (e.g., 'BTCUSDT').
-    * `threshold_price` (decimal): The price at which the alert triggers.
-    * `direction` (string): The trigger direction ('up' or 'down').
-    * `status` (string): The current state ('active' or 'triggered').
-* **`notification_channels`**: Manages the various methods for sending notifications. This table uses **Single Table Inheritance (STI)** for extensibility.
-    * `type` (string): Stores the class name (e.g., `EmailChannel`, `TelegramChannel`), allowing for different logic for each channel type.
-    * `details` (jsonb): A flexible field to store channel-specific configuration, like an email address or a Telegram chat ID.
-* **`alert_notifications`**: A join table that creates a **many-to-many relationship** between alerts and notification channels, allowing one alert to notify multiple channels and one channel to be used for multiple alerts.
+Project can be touch here: http://localhost:3000/notification_channels
 
 ---
 
-## 2. Real-time Processing (Redis)
+## Architecture Overview
 
-To handle a high volume of real-time price data without overwhelming the main database, the system uses **Redis** as a high-speed, in-memory cache for active alerts.
+The system is composed of several independent services that communicate asynchronously via a Redis queue and a shared PostgreSQL database. This decoupled design ensures that the web interface remains responsive and that the real-time price processing is handled efficiently without blocking.
 
-* **Structure**: Active alerts are stored in Redis **Hashes**. The key is structured as `alerts:<exchange>:<symbol>` (e.g., `alerts:binance:BTCUSDT`).
-* **Workflow**: When a new price is received, the application makes a single, fast query to Redis to get all relevant alerts for that specific symbol. This avoids slow database queries in the real-time processing loop.
-* **Synchronization**: The `Alert` model uses `after_save` and `after_destroy` callbacks to automatically keep the Redis cache in sync with the PostgreSQL database.
++-------+        +------------------+        +-------------+
+| User  | -----> |  Web Service     | -----> | PostgreSQL  |
++-------+        |  (Rails App)     |        +-------------+
+    ^            +------------------+                ^
+    |                   |                           |
+    |                   v                           |
+    |           +------------------+                |
+    |           |      Redis       | <---------------+
+    |           +------------------+
+    |                   ^
+    |                   |
+    |            +------------------+
+    |            | Price Listener   |
+    |            |   (Binance)      |
+    |            +------------------+
+    |                   |
+    |                   v
+    |            +------------------+
+    |            | Background Worker|
+    |            |    (Sidekiq)     |
+    |            +------------------+
+    |                   |
+    |                   v
+    |            +------------------+
+    +------------| Notification     |
+                 | Channels         |
+                 | (Email, etc.)    |
+                 +------------------+
 
----
+-----
 
-## 3. Price Ingestion Service
+## Key Concepts & Design Patterns
 
-Price data is ingested by a **standalone, long-running service** (`PriceListener`) that connects to exchange WebSockets.
+### Extensible Notification Channels (STI)
 
-* **Design Pattern**: The service is built using the **Strategy Pattern**. A base `ExchangeListener` class defines a common interface, and specific classes (`Binance::PriceListener`, etc.) implement the connection and message parsing logic for each exchange.
-* **Extensibility**: Adding a new exchange is as simple as creating a new listener class that adheres to the established interface.
-* **Decoupling**: The service runs as a separate process from the main Rails web application, ensuring that the web UI remains responsive regardless of the load on the price listener.
+The notification system is designed to be easily extensible using **Single Table Inheritance (STI)**.
 
----
+  * A base `NotificationChannel` model stores all channel types in a single table.
+  * The `type` column in the `notification_channels` table determines which subclass (e.g., `EmailChannel`, `TelegramChannel`, `LogChannel`) represents the record.
+  * **To add a new notification method**, a developer simply needs to create a new class that inherits from `NotificationChannel` and implements a public `send_notification(alert)` method. The rest of the system, particularly the `NotificationJob`, will automatically be able to use it without modification due to polymorphism.
 
-## 4. Notification System
+### High-Performance Trigger Matching (Redis)
 
-When an alert is triggered, a background job (`NotificationJob`) is enqueued to handle the notifications.
+To handle a potentially large number of active alerts without overwhelming the primary database, the system uses **Redis as a high-performance cache for alert triggers**.
 
-* **Polymorphism**: The system leverages Ruby's polymorphic capabilities. The job iterates through the alert's associated `NotificationChannel` objects and calls a single, common method: `send_notification(alert)`.
-* **Extensibility**: Each channel subclass (e.g., `EmailChannel`, `LogChannel`) implements its own version of the `send_notification` method. To add a new notification method (like SMS), a developer only needs to create a new `SmsChannel` class with its own `send_notification` logic. No other part of the system needs to be changed.
+  * When an `Alert` is created or activated, an `after_save` callback stores its trigger condition (symbol, price, direction) in a Redis Hash. The key is structured like `alerts:binance:BTCUSDT`.
+  * The `PriceListener` service, upon receiving a new price, queries only Redis to find matching alerts. This is an extremely fast, in-memory operation that keeps the database free for transactional tasks.
+
+### Asynchronous Processing (Sidekiq)
+
+All notification deliveries are handled asynchronously by a **Sidekiq background worker**.
+
+  * The `PriceListener`'s only job is to watch for triggers. When a trigger is matched, it enqueues a `NotificationJob` with the `alert_id`. It does not send the notification itself.
+  * A separate `worker` container runs the Sidekiq process, which pulls jobs from the Redis queue and executes them. This ensures that the `PriceListener` is never blocked by slow API calls and can continue processing real-time price data without interruption.
+
+### Real-time Frontend Updates (Action Cable)
+
+The `PriceListener` broadcasts every price tick it receives using **Action Cable**, which pushes the data to connected web clients via WebSockets.
+
+  * This is enabled by Redis Pub/Sub, which acts as a messaging bus between the backend `listener` container and the `web` container running the Action Cable server.
+  * This allows for the creation of a real-time UI that displays live price updates without requiring the user to refresh the page.
+
+-----
+
+## Database Schema
+
+The database consists of three main tables to manage alerts and their notification channels.
+
+### `alerts` table
+
+Stores the core alert data created by the user.
+
+  * `symbol`, `threshold_price`, `direction`: Define the trigger condition.
+  * `exchange`: The source of the price data (e.g., 'binance').
+  * `status`: The current state of the alert (e.g., 'active', 'triggered').
+
+### `notification_channels` table
+
+Stores the different endpoints for sending notifications, using STI.
+
+  * `title`: A user-defined name for the channel.
+  * `type`: A special column for STI that stores the class name (e.g., `EmailChannel`).
+  * `details` (jsonb): A flexible column to store configuration specific to each channel type, such as a `chat_id` for Telegram or an `email` address.
+
+### `alert_notifications` table
+
+A join table that creates the many-to-many relationship between `alerts` and `notification_channels`.
