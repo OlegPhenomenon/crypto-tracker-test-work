@@ -2,7 +2,7 @@
 
 A personal service for monitoring cryptocurrency prices and receiving notifications when user-defined thresholds are met. The application is built with Ruby on Rails and architected as a set of containerized services managed by Docker Compose, designed for scalability, resilience, and extensibility.
 
-Website: http://localhost:3000/notification_channels
+Website: https://cryptotracker.products.ee/
 Deployed by Kamal 2
 
 Standard Rails stack has been used: Ruby on Rails 8 + Hotwire + Redis + Postgresql + Sidekiq
@@ -13,34 +13,7 @@ Standard Rails stack has been used: Ruby on Rails 8 + Hotwire + Redis + Postgres
 
 The system is composed of several independent services that communicate asynchronously via a Redis queue and a shared PostgreSQL database. This decoupled design ensures that the web interface remains responsive and that the real-time price processing is handled efficiently without blocking.
 
-+-------+        +------------------+        +-------------+
-| User  | -----> |  Web Service     | -----> | PostgreSQL  |
-+-------+        |  (Rails App)     |        +-------------+
-    ^            +------------------+                ^
-    |                   |                           |
-    |                   v                           |
-    |           +------------------+                |
-    |           |      Redis       | <---------------+
-    |           +------------------+
-    |                   ^
-    |                   |
-    |            +------------------+
-    |            | Price Listener   |
-    |            |   (Binance)      |
-    |            +------------------+
-    |                   |
-    |                   v
-    |            +------------------+
-    |            | Background Worker|
-    |            |    (Sidekiq)     |
-    |            +------------------+
-    |                   |
-    |                   v
-    |            +------------------+
-    +------------| Notification     |
-                 | Channels         |
-                 | (Email, etc.)    |
-                 +------------------+
+![Schema](schema.png "Schema")
 
 -----
 
