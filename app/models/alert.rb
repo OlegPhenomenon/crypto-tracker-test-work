@@ -15,7 +15,9 @@ class Alert < ApplicationRecord
   validates :exchange, presence: true
   validate :must_have_notification_channels
 
-  enum :direction, { up: "up", down: "down" }
+  DIRECTIONS = { up: "up", down: "down" }
+
+  enum :direction, DIRECTIONS
   enum :exchange, { binance: "binance" }
   enum :status, { active: "active", triggered: "triggered" }
 
