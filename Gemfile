@@ -17,8 +17,8 @@ gem "thruster", require: false
 gem "faye-websocket-ruby"
 gem "faye-websocket"
 gem "sidekiq"
-gem 'telegram-bot-ruby'
-gem 'dotenv-rails'
+gem "telegram-bot-ruby"
+gem "dotenv-rails"
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"

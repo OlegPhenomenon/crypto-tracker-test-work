@@ -1,5 +1,5 @@
 class NotificationChannelsController < ApplicationController
-  before_action :set_notification_channel, only: [:show, :edit, :update, :destroy]
+  before_action :set_notification_channel, only: [ :show, :edit, :update, :destroy ]
 
   def index
     @notification_channels = NotificationChannel.all.order(created_at: :desc)
@@ -13,9 +13,9 @@ class NotificationChannelsController < ApplicationController
 
   def create
     @notification_channel = NotificationChannel.new(notification_channel_params)
-    
+
     if @notification_channel.save
-      redirect_to notification_channel_url(@notification_channel), notice: 'Notification channel was successfully created.', status: :see_other
+      redirect_to notification_channel_url(@notification_channel), notice: "Notification channel was successfully created.", status: :see_other
     else
       Rails.logger.error "Notification channel creation failed: #{@notification_channel.errors.full_messages.join(', ')}"
       render :new, status: :unprocessable_entity
@@ -26,7 +26,7 @@ class NotificationChannelsController < ApplicationController
 
   def update
     if @notification_channel.update(notification_channel_params)
-      redirect_to notification_channel_url(@notification_channel), notice: 'Notification channel was successfully updated.', status: :see_other
+      redirect_to notification_channel_url(@notification_channel), notice: "Notification channel was successfully updated.", status: :see_other
     else
       Rails.logger.error "Notification channel update failed: #{@notification_channel.errors.full_messages.join(', ')}"
       render :edit, status: :unprocessable_entity
@@ -35,7 +35,7 @@ class NotificationChannelsController < ApplicationController
 
   def destroy
     @notification_channel.destroy
-    redirect_to notification_channels_path, notice: 'Notification channel was successfully destroyed.'
+    redirect_to notification_channels_path, notice: "Notification channel was successfully destroyed."
   end
 
   # Confidence: High
@@ -49,12 +49,12 @@ class NotificationChannelsController < ApplicationController
 
     channel_type_string = params[:channel_type]
     channel_class = NotificationChannel.descendants.find { |c| c.name == channel_type_string }
-  
+
     if channel_class.nil?
       head :bad_request
       return
     end
-  
+
     @notification_channel = channel_class.new
 
     render partial: "channel_types/notification_channel_fields",

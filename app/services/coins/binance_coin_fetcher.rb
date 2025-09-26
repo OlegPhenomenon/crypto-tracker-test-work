@@ -1,6 +1,5 @@
 module Coins
   class BinanceCoinFetcher < CoinFetcherInterface
-
     def fetch_coins
       mock_coins
     end

@@ -1,2 +1,14 @@
 inherit_gem:
   rubocop-rails-omakase: rubocop.yml
+
+# (obsolete configuration found in crypto-tracker/tmp/bundle/gems/sshkit-1.24.0/.rubocop_todo.yml, please update it)
+AllCops:
+  NewCops: enable
+  Exclude:
+    - 'tmp/**/*'
+    - 'node_modules/**/*'
+    - 'vendor/**/*'
+    - 'log/**/*'
+    - 'tmp/**/*'
+    - 'tmp/**/*'
+    - 'crypto-tracker/tmp/**/*'

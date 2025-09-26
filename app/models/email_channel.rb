@@ -3,7 +3,7 @@ class EmailChannel < NotificationChannel
   validates :email, presence: true, format: { with: URI::MailTo::EMAIL_REGEXP }
 
   def self.permitted_details
-    [:email, :title]
+    [ :email, :title ]
   end
 
   def send_notification(alert)

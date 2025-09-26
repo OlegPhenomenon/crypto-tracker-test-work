@@ -54,9 +54,9 @@ module Listeners
       alerts_to_check = @redis.hgetall(redis_key)
 
       return unless Alert.symbols(provider: :binance).include?(symbol)
-      
+
       ActionCable.server.broadcast("prices_for_#{symbol}", { price: price })
-      
+
       return if alerts_to_check.empty?
 
       alerts_to_check.each do |alert_id, condition|

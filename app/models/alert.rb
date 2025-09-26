@@ -5,9 +5,9 @@ class Alert < ApplicationRecord
   has_many :alert_notifications, dependent: :destroy
   has_many :notification_channels, through: :alert_notifications
 
-  validates :symbol, inclusion: { 
+  validates :symbol, inclusion: {
     in: ->(alert) { Alert.symbols(provider: alert&.exchange&.to_sym) },
-    message: "%{value} is not a valid symbol for the selected exchange" 
+    message: "%{value} is not a valid symbol for the selected exchange"
   }
   validates :threshold_price, presence: true, numericality: { greater_than: 0 }
   validates :direction, presence: true
@@ -15,9 +15,9 @@ class Alert < ApplicationRecord
   validates :exchange, presence: true
   validate :must_have_notification_channels
 
-  enum :direction, { up: 'up', down: 'down' }
-  enum :exchange, { binance: 'binance' }
-  enum :status, { active: 'active', triggered: 'triggered' }
+  enum :direction, { up: "up", down: "down" }
+  enum :exchange, { binance: "binance" }
+  enum :status, { active: "active", triggered: "triggered" }
 
   private
 

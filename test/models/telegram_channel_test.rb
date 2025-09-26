@@ -40,11 +40,11 @@ class TelegramChannelTest < ActiveSupport::TestCase
                        "*Condition:* Price crossed *#{@alert.direction}* `#{@alert.threshold_price}`"
 
     mock_api = Minitest::Mock.new
-    mock_api.expect(:send_message, true, chat_id: channel.chat_id, text: expected_message, parse_mode: 'Markdown')
-    
+    mock_api.expect(:send_message, true, chat_id: channel.chat_id, text: expected_message, parse_mode: "Markdown")
+
     mock_bot_instance = Minitest::Mock.new
     mock_bot_instance.expect(:api, mock_api)
-    
+
     Telegram::Bot::Client.stub(:new, mock_bot_instance) do
       channel.send_notification(@alert)
     end
