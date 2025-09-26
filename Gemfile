@@ -25,13 +25,13 @@ group :development, :test do
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false
   gem "rubocop-discourse"
+  gem "letter_opener_web"
+  gem "letter_opener"
 end
 
 group :development do
   gem "web-console"
   gem "bullet"
-  gem "letter_opener_web"
-  gem "letter_opener"
 end
 
 group :test do
