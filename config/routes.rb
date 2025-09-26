@@ -11,7 +11,6 @@ Rails.application.routes.draw do
     end
   end
   
-  # Action Cable mount point
   mount ActionCable.server => '/cable'
   mount LetterOpenerWeb::Engine, at: "/letter_opener"
 end

@@ -19,18 +19,19 @@ gem "faye-websocket"
 gem "sidekiq"
 gem 'telegram-bot-ruby'
 gem 'dotenv-rails'
-gem "letter_opener_web"
-gem "letter_opener"
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false
+  gem "rubocop-discourse"
 end
 
 group :development do
   gem "web-console"
   gem "bullet"
+  gem "letter_opener_web"
+  gem "letter_opener"
 end
 
 group :test do

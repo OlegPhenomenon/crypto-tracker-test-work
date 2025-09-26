@@ -38,12 +38,27 @@ class NotificationChannelsController < ApplicationController
     redirect_to notification_channels_path, notice: 'Notification channel was successfully destroyed.'
   end
 
+  # Confidence: High
+  # Category: Remote Code Execution
+  # Check: UnsafeReflection
+  # Message: Unsafe reflection method `constantize` called on parameter value
+  # Code: params[:channel_type].constantize
   def form_fields
-    @channel_type = params[:channel_type]
-    @notification_channel = @channel_type.constantize.new
+    # @channel_type = params[:channel_type]
+    # @notification_channel = @channel_type.constantize.new
+
+    channel_type_string = params[:channel_type]
+    channel_class = NotificationChannel.descendants.find { |c| c.name == channel_type_string }
+  
+    if channel_class.nil?
+      head :bad_request
+      return
+    end
+  
+    @notification_channel = channel_class.new
 
     render partial: "channel_types/notification_channel_fields",
-           locals: { notification_channel: @notification_channel, channel_type: @channel_type }
+           locals: { notification_channel: @notification_channel, channel_type: channel_type_string }
   end
 
   private
@@ -66,7 +81,7 @@ class NotificationChannelsController < ApplicationController
     channel_param_key = channel_type&.underscore
     channel_class = channel_type&.constantize
 
-    specific_params = params
+    params
       .require(channel_param_key)
       .permit(:title, details: channel_class&.permitted_details)
       .merge(type: channel_type)
