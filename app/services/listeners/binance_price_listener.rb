@@ -4,6 +4,10 @@ require "json"
 require "redis"
 require "sidekiq"
 
+ALERTS_BINANCE = "alerts:binance:".freeze
+SYMBOL_FROM_TICKER = "s".freeze
+PRICE_FROM_TICKER = "c".freeze
+
 module Listeners
   class BinancePriceListener < ListenerInterface
     WEBSOCKET_URL = "wss://stream.binance.com:9443/ws/!ticker@arr"
@@ -48,23 +52,23 @@ module Listeners
     end
 
     def process_ticker(ticker)
-      symbol = ticker["s"]
-      price = BigDecimal(ticker["c"])
-      redis_key = "alerts:binance:#{symbol}"
+      symbol = ticker[SYMBOL_FROM_TICKER]
+      price = BigDecimal(ticker[PRICE_FROM_TICKER])
+      redis_key = "#{ALERTS_BINANCE}#{symbol}"
       alerts_to_check = @redis.hgetall(redis_key)
 
       return unless Alert.symbols(provider: :binance).include?(symbol)
-      
+
       ActionCable.server.broadcast("prices_for_#{symbol}", { price: price })
-      
+
       return if alerts_to_check.empty?
 
       alerts_to_check.each do |alert_id, condition|
         threshold_str, direction = condition.split("_")
         threshold = BigDecimal(threshold_str)
 
-        price_crossed_up = (direction == "up" && price > threshold)
-        price_crossed_down = (direction == "down" && price < threshold)
+        price_crossed_up = (direction == Alert::DIRECTIONS[:up] && price > threshold)
+        price_crossed_down = (direction == Alert::DIRECTIONS[:down] && price < threshold)
 
         if price_crossed_up || price_crossed_down
           NotificationJob.perform_later(alert_id.to_i)

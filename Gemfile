@@ -17,15 +17,16 @@ gem "thruster", require: false
 gem "faye-websocket-ruby"
 gem "faye-websocket"
 gem "sidekiq"
-gem 'telegram-bot-ruby'
-gem 'dotenv-rails'
-gem "letter_opener_web"
-gem "letter_opener"
+gem "telegram-bot-ruby"
+gem "dotenv-rails"
 
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false
+  gem "rubocop-discourse"
+  gem "letter_opener_web"
+  gem "letter_opener"
 end
 
 group :development do

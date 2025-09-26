@@ -1,4 +1,4 @@
-require 'telegram/bot'
+require "telegram/bot"
 
 class TelegramChannel < NotificationChannel
   encrypts :token
@@ -9,14 +9,14 @@ class TelegramChannel < NotificationChannel
   validates :bot_token, presence: true, on: :create
 
   def self.permitted_details
-    [:bot_token, :chat_id, :title]
+    [ :bot_token, :chat_id, :title ]
   end
 
   before_save :set_encrypted_token_from_details
   after_find :set_details_from_encrypted_token
 
   def bot_token
-    @bot_token || details['bot_token']
+    @bot_token || details["bot_token"]
   end
 
   def bot_token=(value)
@@ -27,9 +27,9 @@ class TelegramChannel < NotificationChannel
     message = "🔔 *Crypto Alert Triggered!* 🔔\n\n" \
               "*Symbol:* `#{alert.symbol}`\n" \
               "*Condition:* Price crossed *#{alert.direction}* `#{alert.threshold_price}`"
-  
+
     bot = Telegram::Bot::Client.new(self.bot_token)
-    bot.api.send_message(chat_id: self.chat_id, text: message, parse_mode: 'Markdown')
+    bot.api.send_message(chat_id: self.chat_id, text: message, parse_mode: "Markdown")
 
     Rails.logger.info "✅ Telegram notification sent successfully to chat_id: #{self.chat_id} for Alert ##{alert.id}"
   rescue => e
@@ -39,10 +39,10 @@ class TelegramChannel < NotificationChannel
   private
 
   def set_encrypted_token_from_details
-    self.details['bot_token'] = bot_token
+    self.details["bot_token"] = bot_token
   end
 
   def set_details_from_encrypted_token
-    @bot_token = self.details['bot_token']
+    @bot_token = self.details["bot_token"]
   end
 end

@@ -1,6 +1,6 @@
 class LogChannel < NotificationChannel
   def self.permitted_details
-    [:title]
+    [ :title ]
   end
 
   def send_notification(alert)
