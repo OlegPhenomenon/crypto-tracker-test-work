@@ -7,6 +7,7 @@ class EmailChannel < NotificationChannel
   end
 
   def send_notification(alert)
-    AlertMailer.alert_triggered(alert, self).deliver_later
+    # AlertMailer.alert_triggered(alert, self).deliver_later
+    Rails.logger.info "Email notification sent to #{self.email} for alert #{alert.id}"
   end
 end
